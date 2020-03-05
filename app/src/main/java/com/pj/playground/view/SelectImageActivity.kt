@@ -42,12 +42,13 @@ class SelectImageActivity : AppCompatActivity() {
 
         // Create request to get image from filesystem when button clicked
         selectImage.setOnClickListener {
-            val chooseIntent = Intent(
+            /*val chooseIntent = Intent(
                 Intent.ACTION_PICK,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI
             )
 
-            startActivityForResult(chooseIntent, REQUEST_CODE_IMAGE)
+            startActivityForResult(chooseIntent, REQUEST_CODE_IMAGE)*/
+            handleImageRequestResult(null)
         }
     }
 
@@ -103,17 +104,17 @@ class SelectImageActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleImageRequestResult(intent: Intent) {
+    private fun handleImageRequestResult(intent: Intent?) {
         // If clipdata is available, we use it, otherwise we use data
-        val imageUri: Uri? = intent.clipData?.getItemAt(0)?.uri ?: intent.data
+        val imageUri: Uri? = intent?.clipData?.getItemAt(0)?.uri ?: intent?.data
 
-        if (imageUri == null) {
+        /*if (imageUri == null) {
             Log.e(TAG, "Invalid input image uri.")
             return
-        }
+        }*/
 
         val filterIntent = Intent(this, BlurActivity::class.java)
-        filterIntent.putExtra(KEY_IMAGE_URI, imageUri.toString())
+        //filterIntent.putExtra(KEY_IMAGE_URI, imageUri.toString())
         startActivity(filterIntent)
     }
 

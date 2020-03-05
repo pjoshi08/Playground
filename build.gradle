@@ -6,6 +6,7 @@ buildscript {
     ext.work_version = '2.3.2'
     ext.lifecycle_version = "2.2.0"
     versions.glide = "4.10.0"
+    versions.timber = "4.7.1"
     repositories {
         google()
         jcenter()

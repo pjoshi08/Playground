@@ -1,6 +1,6 @@
 @file:JvmName("WorkerUtils")
 
-package com.pj.playground.util
+package com.pj.playground.workers
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -17,6 +17,7 @@ import androidx.annotation.WorkerThread
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.pj.playground.R
+import com.pj.playground.util.*
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
@@ -49,7 +50,10 @@ fun makeStatusNotification(message: String, context: Context) {
     }
 
     // Create Notification
-    val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+    val builder = NotificationCompat.Builder(
+        context,
+        CHANNEL_ID
+    )
         .setSmallIcon(R.drawable.ic_launcher_foreground)
         .setContentTitle(NOTIFICATION_TITLE)
         .setContentText(message)
@@ -109,7 +113,10 @@ fun blurBitmap(bitmap: Bitmap, applicationContext: Context): Bitmap {
 @Throws(FileNotFoundException::class)
 fun writeBitmapToFile(applicationContext: Context, bitmap: Bitmap): Uri {
     val name = "blur-filter-output-${UUID.randomUUID()}.png"
-    val outputDir = File(applicationContext.filesDir, OUTPUT_PATH)
+    val outputDir = File(
+        applicationContext.filesDir,
+        OUTPUT_PATH
+    )
     if (!outputDir.exists()) {
         outputDir.mkdir()
     }

@@ -1,11 +1,21 @@
 package com.pj.playground.view
 
+import android.app.Application
 import android.net.Uri
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
+import com.pj.playground.workers.BlurWorker
 
-class BlurViewModel : ViewModel() {
+class BlurViewModel(application: Application) : AndroidViewModel(application) {
     internal var imageUri: Uri? = null
     internal var outputUri: Uri? = null
+
+    private val workManager = WorkManager.getInstance(application)
+
+    internal fun applyBlur(blurLevel: Int) {
+        workManager.enqueue(OneTimeWorkRequest.from(BlurWorker::class.java))
+    }
 
     private fun uriOrNull(uriString: String?): Uri? {
         return if (!uriString.isNullOrEmpty()) {

@@ -20,10 +20,19 @@ class BlurActivity : AppCompatActivity() {
         blurViewModel = ViewModelProvider(this).get(BlurViewModel::class.java)
 
         // Image uri should be stored in the ViewModel; put it there then display
-        val imageUriExtra = intent.getStringExtra(KEY_IMAGE_URI)
+        /*val imageUriExtra = intent.getStringExtra(KEY_IMAGE_URI)
         blurViewModel.setImageUri(imageUriExtra)
         blurViewModel.imageUri?.let {
             Glide.with(this).load(it).into(image_view)
+        }*/
+        Glide.with(this).load(R.drawable.test).into(image_view)
+
+        setOnClickListeners()
+    }
+
+    private fun setOnClickListeners() {
+        go_button.setOnClickListener {
+            blurViewModel.applyBlur(blurLevel)
         }
     }
 
