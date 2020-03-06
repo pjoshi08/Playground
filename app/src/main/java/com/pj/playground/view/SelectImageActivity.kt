@@ -5,24 +5,23 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.pj.playground.R
 import com.pj.playground.util.*
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.*
 
 class SelectImageActivity : AppCompatActivity() {
 
     private val TAG by lazy { SelectImageActivity::class.java.simpleName }
 
-    private val permissions = Arrays.asList(
+    private val permissions = listOf(
         Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
@@ -42,13 +41,13 @@ class SelectImageActivity : AppCompatActivity() {
 
         // Create request to get image from filesystem when button clicked
         selectImage.setOnClickListener {
-            /*val chooseIntent = Intent(
+            val chooseIntent = Intent(
                 Intent.ACTION_PICK,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI
             )
 
-            startActivityForResult(chooseIntent, REQUEST_CODE_IMAGE)*/
-            handleImageRequestResult(null)
+            startActivityForResult(chooseIntent, REQUEST_CODE_IMAGE)
+            //handleImageRequestResult(null)
         }
     }
 
@@ -104,17 +103,17 @@ class SelectImageActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleImageRequestResult(intent: Intent?) {
+    private fun handleImageRequestResult(intent: Intent) {
         // If clipdata is available, we use it, otherwise we use data
-        val imageUri: Uri? = intent?.clipData?.getItemAt(0)?.uri ?: intent?.data
+        val imageUri: Uri? = intent.clipData?.getItemAt(0)?.uri ?: intent.data
 
-        /*if (imageUri == null) {
+        if (imageUri == null) {
             Log.e(TAG, "Invalid input image uri.")
             return
-        }*/
+        }
 
         val filterIntent = Intent(this, BlurActivity::class.java)
-        //filterIntent.putExtra(KEY_IMAGE_URI, imageUri.toString())
+        filterIntent.putExtra(KEY_IMAGE_URI, imageUri.toString())
         startActivity(filterIntent)
     }
 
