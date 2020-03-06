@@ -4,10 +4,13 @@ import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.pj.playground.util.KEY_IMAGE_URI
 import com.pj.playground.workers.BlurWorker
+import com.pj.playground.workers.CleanupWorker
+import com.pj.playground.workers.SaveImageToFileWorker
 
 class BlurViewModel(application: Application) : AndroidViewModel(application) {
     internal var imageUri: Uri? = null
@@ -16,11 +19,32 @@ class BlurViewModel(application: Application) : AndroidViewModel(application) {
     private val workManager = WorkManager.getInstance(application)
 
     internal fun applyBlur(blurLevel: Int) {
-        val request = OneTimeWorkRequestBuilder<BlurWorker>()
-            .setInputData(createInputDataForUri())
-            .build()
+        // Add WorkRequest to Cleanup temporary images
+        var continuation = workManager
+            .beginWith(
+                OneTimeWorkRequest
+                    .from(CleanupWorker::class.java)
+            )
 
-        workManager.enqueue(request)
+        // Add WorkRequests to blur the image the number of times requested
+        for (i in 0 until blurLevel) {
+            val blurBuilder = OneTimeWorkRequestBuilder<BlurWorker>()
+
+            // Input the Uri if this is the first blur operation
+            // After the first blur operation the input will be the output of previous
+            // blur operations.
+            if (i == 0) {
+                blurBuilder.setInputData(createInputDataForUri())
+            }
+            continuation = continuation.then(blurBuilder.build())
+        }
+
+        // Add WorkRequest to save the image to the filesystem
+        val saveRequest = OneTimeWorkRequestBuilder<SaveImageToFileWorker>().build()
+        continuation = continuation.then(saveRequest)
+
+        // Actually start the work
+        continuation.enqueue()
     }
 
     /**
