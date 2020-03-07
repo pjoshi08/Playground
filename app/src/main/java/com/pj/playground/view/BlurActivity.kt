@@ -3,7 +3,9 @@ package com.pj.playground.view
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.work.WorkInfo
 import com.bumptech.glide.Glide
 import com.pj.playground.R
 import com.pj.playground.util.KEY_IMAGE_URI
@@ -27,6 +29,30 @@ class BlurActivity : AppCompatActivity() {
         }
 
         setOnClickListeners()
+        blurViewModel.outputWorkInfos.observe(this, workInfosObserver())
+    }
+
+    private fun workInfosObserver(): Observer<List<WorkInfo>> {
+        return Observer { listOfWorkInfo ->
+            // Note that these next few lines grab a single WorkInfo if it exists
+            // This code could be in a Transformation in the ViewModel; they are included here
+            // so that the entire process of displaying a WorkInfo is in one location.
+
+            // If there are no matching work info, do nothing
+            if (listOfWorkInfo.isNullOrEmpty()) {
+                return@Observer
+            }
+
+            // We only care about the one output status.
+            // Every continuation has only one worker tagged TAG_OUTPUT
+            val workInfo = listOfWorkInfo[0]
+
+            if (workInfo.state.isFinished) {
+                showWorkFinished()
+            } else {
+                showWorkInProgress()
+            }
+        }
     }
 
     private fun setOnClickListeners() {
