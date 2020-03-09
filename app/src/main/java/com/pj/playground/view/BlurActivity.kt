@@ -1,5 +1,6 @@
 package com.pj.playground.view
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -49,6 +50,16 @@ class BlurActivity : AppCompatActivity() {
 
             if (workInfo.state.isFinished) {
                 showWorkFinished()
+
+                // Normally this processing, which is not directly related to drawing views on
+                // screen would be in the ViewModel. For simplicity we are keeping it here.
+                val outputImageUri = workInfo.outputData.getString(KEY_IMAGE_URI)
+
+                // If there is an output file show "See File" button
+                if (!outputImageUri.isNullOrEmpty()) {
+                    blurViewModel.setOutputUri(outputImageUri)
+                    see_file_button.visibility = View.VISIBLE
+                }
             } else {
                 showWorkInProgress()
             }
@@ -58,6 +69,15 @@ class BlurActivity : AppCompatActivity() {
     private fun setOnClickListeners() {
         go_button.setOnClickListener {
             blurViewModel.applyBlur(blurLevel)
+        }
+
+        see_file_button.setOnClickListener {
+            blurViewModel.outputUri?.let { currentUri ->
+                val actionView = Intent(Intent.ACTION_VIEW, currentUri)
+                actionView.resolveActivity(packageManager)?.let {
+                    startActivity(actionView)
+                }
+            }
         }
     }
 
