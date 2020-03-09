@@ -21,6 +21,7 @@ class BlurWorker(context: Context, params: WorkerParameters) : Worker(context, p
 
         // fire a notification that the work is starting
         makeStatusNotification("Blurring Image", appContext)
+        sleep()
 
         return try {
             if (TextUtils.isEmpty(resourceUri)) {

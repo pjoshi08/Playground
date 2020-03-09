@@ -49,9 +49,15 @@ class BlurViewModel(application: Application) : AndroidViewModel(application) {
             continuation = continuation.then(blurBuilder.build())
         }
 
+        // Create charging constraint
+        val constraints = Constraints.Builder()
+            .setRequiresCharging(true)
+            .build()
+
         // Add WorkRequest to save the image to the filesystem
         val saveRequest = OneTimeWorkRequestBuilder<SaveImageToFileWorker>()
             .addTag(TAG_OUTPUT)
+            .setConstraints(constraints)
             .build()
         continuation = continuation.then(saveRequest)
 
@@ -86,5 +92,9 @@ class BlurViewModel(application: Application) : AndroidViewModel(application) {
 
     internal fun setOutputUri(uriString: String?) {
         outputUri = uriOrNull(uriString)
+    }
+
+    internal fun cancelWork() {
+        workManager.cancelUniqueWork(IMAGE_MANIPULATION_WORK_NAME)
     }
 }

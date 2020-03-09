@@ -79,6 +79,10 @@ class BlurActivity : AppCompatActivity() {
                 }
             }
         }
+
+        cancel_button.setOnClickListener {
+            blurViewModel.cancelWork()
+        }
     }
 
     private fun showWorkInProgress() {
