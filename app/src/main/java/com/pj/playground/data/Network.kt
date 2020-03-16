@@ -1,6 +1,6 @@
 package com.pj.playground.data
 
-import com.pj.playground.util.NetworkInterceptor
+import com.pj.playground.utils.NetworkInterceptor
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit

@@ -1,4 +1,4 @@
-package com.pj.playground.util
+package com.pj.playground.utils
 
 import java.util.concurrent.Executors
 

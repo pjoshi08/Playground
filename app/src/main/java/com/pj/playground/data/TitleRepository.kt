@@ -2,7 +2,7 @@ package com.pj.playground.data
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
-import com.pj.playground.util.BACKGROUND
+import com.pj.playground.utils.BACKGROUND
 
 /**
  * TitleRepository provides an interface to fetch a title or request a new one be generated.
