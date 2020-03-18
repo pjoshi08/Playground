@@ -3,6 +3,7 @@ package com.pj.playground.data
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import com.pj.playground.utils.BACKGROUND
+import kotlinx.coroutines.delay
 
 /**
  * TitleRepository provides an interface to fetch a title or request a new one be generated.
@@ -57,6 +58,11 @@ class TitleRepository(val network: Network, val titleDao: TitleDao) {
                 )
             }
         }
+    }
+
+    suspend fun refreshTitle() {
+        // TODO: Refresh from network and write to database
+        delay(500)
     }
 }
 
