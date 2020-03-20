@@ -2,7 +2,6 @@ package com.pj.playground.data
 
 import com.pj.playground.utils.NetworkInterceptor
 import okhttp3.OkHttpClient
-import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -12,7 +11,7 @@ import retrofit2.http.GET
  */
 interface Network {
     @GET("next_title.json")
-    fun fetchNextTitle(): Call<String>
+    suspend fun fetchNextTitle(): String
 }
 
 fun getNetworkService() = service

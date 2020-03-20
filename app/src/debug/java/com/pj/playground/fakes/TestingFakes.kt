@@ -29,7 +29,7 @@ class TitleDaoFake(initialTitle: String) : TitleDao {
      */
     private val insertedForNext = Channel<Title>(capacity = Channel.BUFFERED)
 
-    override fun insertTitle(title: Title) {
+    override suspend fun insertTitle(title: Title) {
         insertedForNext.offer(title)
         _titleLiveData.value = title
     }
@@ -75,8 +75,7 @@ class TitleDaoFake(initialTitle: String) : TitleDao {
  * Testing Fake implementation of MainNetwork
  */
 class NetworkFake(var result: String) : Network {
-    override fun fetchNextTitle(): Call<String> =
-        MakeCompilerHappyForStarterCode() // TODO: replace with `result`
+    override suspend fun fetchNextTitle(): String = result // COMPLETED: replace with `result`
 }
 
 /**
@@ -85,8 +84,7 @@ class NetworkFake(var result: String) : Network {
 class NetworkCompletableFake() : Network {
     private var completable = CompletableDeferred<String>()
 
-    override fun fetchNextTitle(): Call<String> =
-        MakeCompilerHappyForStarterCode() // TODO: replace with `completable.await()`
+    override suspend fun fetchNextTitle(): String = completable.await() // COMPLETED: replace with `completable.await()`
 
     fun sendCompletionToAllCurrentRequests(result: String) {
         completable.complete(result)
