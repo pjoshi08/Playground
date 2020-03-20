@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.pj.playground.data.TitleRefreshError
 import com.pj.playground.data.TitleRepository
 import com.pj.playground.utils.singleArgViewModelFactory
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -106,10 +107,16 @@ class MainViewModel(private val repository: TitleRepository) : ViewModel() {
      */
     private fun refreshTitle() {
         // COMPLETED: Convert refreshTitle to use coroutines
-        viewModelScope.launch {
+        launchDataLoad {
+            repository.refreshTitle()
+        }
+    }
+
+    private fun launchDataLoad(block: suspend () -> Unit): Job {
+        return viewModelScope.launch {
             try {
                 _spinner.value = true
-                repository.refreshTitle()
+                block()
             } catch (error: TitleRefreshError) {
                 _snackBar.value = error.message
             } finally {
