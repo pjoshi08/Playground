@@ -16,7 +16,16 @@ class RefreshDataWork(context: Context, params: WorkerParameters, private val ne
     CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
-        return Result.success() // TODO: Use Coroutines from WorkManager
+        // COMPLETED: Use Coroutines from WorkManager
+        val database = getDatabase(applicationContext)
+        val repository = TitleRepository(network, database.titleDao)
+
+        return try {
+            repository.refreshTitle()
+            Result.success()
+        } catch (error: TitleRefreshError) {
+            Result.failure()
+        }
     }
 
     class Factory(private val network: Network = getNetworkService()) : WorkerFactory() {
