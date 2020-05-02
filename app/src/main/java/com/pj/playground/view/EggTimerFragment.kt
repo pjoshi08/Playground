@@ -34,7 +34,6 @@ class EggTimerFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(EggTimerViewModel::class.java)
-        // TODO: Use the ViewModel
     }
 
     private fun createChannel(channelId: String, channelName: String) {

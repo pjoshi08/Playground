@@ -2,13 +2,15 @@ package com.pj.playground.util
 
 import android.app.NotificationManager
 import android.content.Context
+import androidx.core.app.NotificationCompat
+import com.pj.playground.R
 
 // Notification ID
 private val NOTIFICATION_ID = 0
 private val REQUEST_CODE = 0
 private val FLAGS = 0
 
-// TODO: Step 1.1 extension function to send messages (GIVEN)
+// COMPLETED: Step 1.1 extension function to send messages (GIVEN)
 /**
  * Builds and delivers the notification.
  *
@@ -25,12 +27,19 @@ fun NotificationManager.sendNotification(messageBody: String, appContext: Contex
 
     // TODO: Step 2.2 add snooze action
 
-    // TODO: Step 1.2 get an instance of NotificationCompat.Builder
+    // COMPLETED: Step 1.2 get an instance of NotificationCompat.Builder
     // Build the notification
+    val builder = NotificationCompat.Builder(
+        appContext,
+        appContext.getString(R.string.egg_notification_channel_id)
+    )
 
     // TODO: Step 1.8 use the new 'breakfast' notification channel
 
-    // TODO: Step 1.3 set title, text and icon to builder
+        // COMPLETED: Step 1.3 set title, text and icon to builder
+        .setSmallIcon(R.drawable.cooked_egg)
+        .setContentTitle(appContext.getString(R.string.notification_title))
+        .setContentText(messageBody)
 
     // TODO: Step 1.13 set content intent
 
@@ -40,8 +49,8 @@ fun NotificationManager.sendNotification(messageBody: String, appContext: Contex
 
     // TODO: Step 2.5 set priority
 
-    // TODO: Step 1.4 call notify
-
+    // COMPLETED: Step 1.4 call notify
+    notify(NOTIFICATION_ID, builder.build())
 }
 
 // TODO: Step 1.14 Cancel all notifications
