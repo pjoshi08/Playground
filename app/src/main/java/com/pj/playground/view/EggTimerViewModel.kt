@@ -2,18 +2,21 @@ package com.pj.playground.view
 
 import android.app.AlarmManager
 import android.app.Application
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.CountDownTimer
 import android.os.SystemClock
 import androidx.core.app.AlarmManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.pj.playground.R
 import com.pj.playground.receiver.AlarmReceiver
+import com.pj.playground.util.cancelNotifications
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -106,14 +109,13 @@ class EggTimerViewModel(private val app: Application) : AndroidViewModel(app) {
                 val triggerTime = SystemClock.elapsedRealtime() + selectedInterval
 
                 // COMPLETED: Step 1.5 get an instance of NotificationManager and call sendNotification
-                /*val notificationManager = ContextCompat.getSystemService(
+                // COMPLETED: Step 1.15 call cancel notification
+                val notificationManager = ContextCompat.getSystemService(
                     app,
                     NotificationManager::class.java
                 ) as NotificationManager
 
-                notificationManager.sendNotification(app.getString(R.string.timer_running), app)*/
-
-                // TODO: Step 1.15 call cancel notification
+                notificationManager.cancelNotifications()
 
                 AlarmManagerCompat.setAndAllowWhileIdle(
                     alarmManager,
