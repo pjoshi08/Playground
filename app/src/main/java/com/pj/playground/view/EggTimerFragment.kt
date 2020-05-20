@@ -28,7 +28,11 @@ class EggTimerFragment : Fragment() {
         val binding: FragmentEggTimerBinding = DataBindingUtil.inflate(
             inflater, R.layout.fragment_egg_timer, container, false
         )
+
+        viewModel = ViewModelProvider(this).get(EggTimerViewModel::class.java)
+
         binding.lifecycleOwner = this
+        binding.viewModel = viewModel
 
         // COMPLETED: Step 1.7 call create channel
         createChannel(
@@ -37,11 +41,6 @@ class EggTimerFragment : Fragment() {
         )
 
         return binding.root
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(EggTimerViewModel::class.java)
     }
 
     private fun createChannel(channelId: String, channelName: String) {

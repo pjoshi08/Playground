@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
-            name="viewmodel"
+            name="viewModel"
             type="com.pj.playground.view.EggTimerViewModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".view.EggTimerFragment">
@@ -19,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            app:elapsedTime="@{viewmodel.elapsedTime}"
+            app:elapsedTime="@{viewModel.elapsedTime}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -33,9 +34,9 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:entries="@array/egg_array"
-            android:onItemSelected="@{(parent, view, selection, id)-> viewmodel.setTimeSelected(selection)}"
+            android:onItemSelected="@{(parent, view, selection, id)-> viewModel.setTimeSelected(selection)}"
             android:prompt="@string/egg_prompt"
-            android:selectedItemPosition="@{viewmodel.timeSelection}"
+            android:selectedItemPosition="@{viewModel.timeSelection}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/on_off_switch"
             app:layout_constraintStart_toStartOf="parent"
@@ -47,8 +48,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="32dp"
-            android:checked="@{viewmodel.alarmOn}"
-            android:onCheckedChanged="@{(button, on)-> viewmodel.setAlarm(on)}"
+            android:checked="@{viewModel.isAlarmOn}"
+            android:onCheckedChanged="@{(button, on)-> viewModel.setAlarm(on)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/minutes_spinner"

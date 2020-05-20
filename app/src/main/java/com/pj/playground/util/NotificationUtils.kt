@@ -1,9 +1,12 @@
 package com.pj.playground.util
 
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.pj.playground.R
+import com.pj.playground.view.MainActivity
 
 // Notification ID
 private val NOTIFICATION_ID = 0
@@ -19,10 +22,15 @@ private val FLAGS = 0
 fun NotificationManager.sendNotification(messageBody: String, appContext: Context) {
     // Create the content intent for the notification, which launches
     // this activity
-    // TODO: Step 1.11 create intent
-
-    // TODO: Step 1.12 create PendingIntent
-
+    // COMPLETED: Step 1.11 create intent
+    val contentIntent = Intent(appContext, MainActivity::class.java)
+    // COMPLETED: Step 1.12 create PendingIntent
+    val contentPendingIntent = PendingIntent.getActivity(
+        appContext,
+        NOTIFICATION_ID,
+        contentIntent,
+        PendingIntent.FLAG_UPDATE_CURRENT
+    )
     // TODO: Step 2.0 add style
 
     // TODO: Step 2.2 add snooze action
@@ -41,8 +49,9 @@ fun NotificationManager.sendNotification(messageBody: String, appContext: Contex
         .setContentTitle(appContext.getString(R.string.notification_title))
         .setContentText(messageBody)
 
-    // TODO: Step 1.13 set content intent
-
+    // COMPLETED: Step 1.13 set content intent
+        .setContentIntent(contentPendingIntent)
+        .setAutoCancel(true)
     // TODO: Step 2.1 add style to builder
 
     // TODO: Step 2.3 add snooze action

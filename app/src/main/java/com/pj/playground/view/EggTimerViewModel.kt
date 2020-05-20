@@ -27,12 +27,11 @@ class EggTimerViewModel(private val app: Application) : AndroidViewModel(app) {
     private val second: Long = 1_000L
 
     private val timerLengthOptions: IntArray
-
     private val notifyPendingIntent: PendingIntent
     private val notifyIntent = Intent(app, AlarmReceiver::class.java)
 
     private val alarmManager = app.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-    private var prefs = app.getSharedPreferences("eggtimernotifications", Context.MODE_PRIVATE)
+    private var prefs = app.getSharedPreferences("com.pj.playground", Context.MODE_PRIVATE)
 
     private val _timeSelection = MutableLiveData<Int>()
     val timeSelection: LiveData<Int>
@@ -42,8 +41,8 @@ class EggTimerViewModel(private val app: Application) : AndroidViewModel(app) {
     val elapsedTime: LiveData<Long>
         get() = _elapsedTime
 
-    private val _alarmOn = MutableLiveData<Boolean>()
-    val alarmOn: LiveData<Boolean>
+    private var _alarmOn = MutableLiveData<Boolean>()
+    val isAlarmOn: LiveData<Boolean>
         get() = _alarmOn
 
     private lateinit var timer: CountDownTimer
@@ -92,7 +91,9 @@ class EggTimerViewModel(private val app: Application) : AndroidViewModel(app) {
         _timeSelection.value = timerLengthSelection
     }
 
-
+    /**
+     * Creates a new alarm, notification and timer
+     */
     private fun startTimer(timerLengthSelection: Int) {
         _alarmOn.value?.let {
             if (!it) {
@@ -126,7 +127,6 @@ class EggTimerViewModel(private val app: Application) : AndroidViewModel(app) {
                 }
             }
         }
-
         createTimer()
     }
 
@@ -139,7 +139,7 @@ class EggTimerViewModel(private val app: Application) : AndroidViewModel(app) {
             timer = object : CountDownTimer(triggerTime, second) {
                 override fun onTick(millisUntilFinished: Long) {
                     _elapsedTime.value = triggerTime - SystemClock.elapsedRealtime()
-                    if (_elapsedTime.value!! < 0) {
+                    if (_elapsedTime.value!! <= 0) {
                         resetTimer()
                     }
                 }
