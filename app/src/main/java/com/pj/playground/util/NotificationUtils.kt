@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import androidx.core.app.NotificationCompat
 import com.pj.playground.R
+import com.pj.playground.receiver.SnoozeReceiver
 import com.pj.playground.view.MainActivity
 
 // Notification ID
@@ -41,7 +42,14 @@ fun NotificationManager.sendNotification(messageBody: String, appContext: Contex
         .bigPicture(eggImage)
         .bigLargeIcon(null)
 
-    // TODO: Step 2.2 add snooze action
+    // COMPLETED: Step 2.2 add snooze action
+    val snoozeIntent = Intent(appContext, SnoozeReceiver::class.java)
+    val snoozePendingIntent = PendingIntent.getBroadcast(
+        appContext,
+        REQUEST_CODE,
+        snoozeIntent,
+        FLAGS
+    )
 
     // COMPLETED: Step 1.2 get an instance of NotificationCompat.Builder
     // Build the notification
@@ -64,10 +72,15 @@ fun NotificationManager.sendNotification(messageBody: String, appContext: Contex
         .setStyle(bigPictureStyle)
         .setLargeIcon(eggImage)
 
-    // TODO: Step 2.3 add snooze action
+    // COMPLETED: Step 2.3 add snooze action
+        .addAction(
+            R.drawable.egg_icon,
+            appContext.getString(R.string.snooze),
+            snoozePendingIntent
+        )
 
-    // TODO: Step 2.5 set priority
-
+    // COMPLETED: Step 2.5 set priority
+        .setPriority(NotificationCompat.PRIORITY_HIGH)
     // COMPLETED: Step 1.4 call notify
     notify(NOTIFICATION_ID, builder.build())
 }
