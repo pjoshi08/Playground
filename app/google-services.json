@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "588314846474",
+    "firebase_url": "https://fcm-notifications-b745e.firebaseio.com",
+    "project_id": "fcm-notifications-b745e",
+    "storage_bucket": "fcm-notifications-b745e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:588314846474:android:91b1104b25d6d2dc6cc6f3",
+        "android_client_info": {
+          "package_name": "com.pj.playground"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "588314846474-12042atvkr0mv9c9qfk24upig66k6gvl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTTQcobyzeTsCgc_GJ-tbsMny1igF13pg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "588314846474-12042atvkr0mv9c9qfk24upig66k6gvl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

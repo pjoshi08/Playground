@@ -8,9 +8,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.messaging.FirebaseMessaging
 import com.pj.playground.R
 import com.pj.playground.databinding.FragmentEggTimerBinding
 
@@ -40,6 +42,8 @@ class EggTimerFragment : Fragment() {
             getString(R.string.egg_notification_channel_name)
         )
 
+        subscribeToTopic()
+
         return binding.root
     }
 
@@ -52,7 +56,10 @@ class EggTimerFragment : Fragment() {
                 // COMPLETED: Step 2.4 change importance
                 NotificationManager.IMPORTANCE_HIGH
             )
-            // TODO: Step 2.6 disable badges for this channel
+            // COMPLETED: Step 2.6 disable badges for this channel
+                .apply {
+                    setShowBadge(false)
+                }
 
             with(notificationChannel) {
                 enableLights(true)
@@ -67,6 +74,19 @@ class EggTimerFragment : Fragment() {
             notificationManager.createNotificationChannel(notificationChannel)
         }
         // COMPLETED: Step 1.6 END create a channel
+    }
+
+    private fun subscribeToTopic() {
+        FirebaseMessaging.getInstance()
+            .subscribeToTopic(TOPIC)
+            .addOnCompleteListener { task ->
+                var msg = getString(R.string.message_subscribed)
+                if (!task.isSuccessful) {
+                    msg = getString(R.string.message_subscribe_failed)
+                }
+
+                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+            }
     }
 
     companion object {
