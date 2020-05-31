@@ -25,7 +25,7 @@ private enum class FanSpeed(val label: Int) {
         OFF -> LOW
         LOW -> MEDIUM
         MEDIUM -> HIGH
-        HIGH -> LOW
+        HIGH -> OFF
     }
 }
 

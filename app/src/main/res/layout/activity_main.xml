@@ -22,7 +22,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <com.example.android.customfancontroller.DialView
+    <com.pj.playground.view.DialView
         android:id="@+id/dialView"
         android:layout_width="@dimen/fan_dimen"
         android:layout_height="@dimen/fan_dimen"
