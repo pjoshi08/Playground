@@ -4,17 +4,17 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion App.target_sdk
-    buildToolsVersion App.build_tools
+    compileSdkVersion compile_sdk
+    buildToolsVersion build_tools_version
 
     defaultConfig {
-        applicationId App.application_id
-        minSdkVersion App.min_sdk
-        targetSdkVersion App.target_sdk
-        versionCode App.version_code
-        versionName App.version_name
+        applicationId application_id
+        minSdkVersion min_sdk
+        targetSdkVersion compile_sdk
+        versionCode version_code
+        versionName version_name
 
-        testInstrumentationRunner App.junit_runner
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -24,24 +24,18 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = App.source_target
-        targetCompatibility = App.source_target
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
     }
 
     kotlinOptions {
-        jvmTarget = App.jvm_target
+        jvmTarget = "1.8"
     }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation Deps.kotlin_stdlib
-    implementation Deps.androidx_appCompat
-    implementation Deps.androidx_core_ktx
-    implementation Deps.contraintlayout
-
-    // test
-    testImplementation Deps.junit
-    androidTestImplementation Deps.android_test
-    androidTestImplementation Deps.espresso
+    implementation libraries
+    testImplementation testLibraries
+    androidTestImplementation androidTestLibraries
 }
