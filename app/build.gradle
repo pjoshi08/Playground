@@ -4,17 +4,17 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    compileSdkVersion App.target_sdk
+    buildToolsVersion App.build_tools
 
     defaultConfig {
-        applicationId "com.pj.playground"
-        minSdkVersion 21
-        targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        applicationId App.application_id
+        minSdkVersion App.min_sdk
+        targetSdkVersion App.target_sdk
+        versionCode App.version_code
+        versionName App.version_name
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner App.junit_runner
     }
 
     buildTypes {
@@ -24,22 +24,24 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+        sourceCompatibility = App.source_target
+        targetCompatibility = App.source_target
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = App.jvm_target
     }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.core:core-ktx:1.2.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation Deps.kotlin_stdlib
+    implementation Deps.androidx_appCompat
+    implementation Deps.androidx_core_ktx
+    implementation Deps.contraintlayout
+
+    // test
+    testImplementation Deps.junit
+    androidTestImplementation Deps.android_test
+    androidTestImplementation Deps.espresso
 }
