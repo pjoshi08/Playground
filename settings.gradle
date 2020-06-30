@@ -1,2 +1,3 @@
+include ':sunflower'
 rootProject.name='Playground'
 include ':app'

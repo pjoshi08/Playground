@@ -1,4 +1,4 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
@@ -8,13 +8,13 @@ android {
     buildToolsVersion build_tools_version
 
     defaultConfig {
-        applicationId application_id
         minSdkVersion min_sdk
         targetSdkVersion compile_sdk
         versionCode version_code
         versionName version_name
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
     }
 
     buildTypes {
@@ -23,14 +23,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
 
     dataBinding {
         enabled true
@@ -38,12 +30,8 @@ android {
 }
 
 dependencies {
-    implementation project(':sunflower')
-
     implementation libraries
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     kapt librariesKapt
-
     testImplementation testLibraries
     androidTestImplementation androidTestLibraries
 }
