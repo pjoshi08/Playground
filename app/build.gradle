@@ -41,7 +41,6 @@ dependencies {
     implementation project(':sunflower')
 
     implementation libraries
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     kapt librariesKapt
 
     testImplementation testLibraries

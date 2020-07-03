@@ -23,7 +23,7 @@ class NetworkService {
         result.shuffled()
     }
 
-    suspend fun plantsByGrowZone(growZone: GrowZone): List<Plant> = withContext(Dispatchers.IO) {
+    suspend fun plantsByGrowZone(growZone: GrowZone): List<Plant> = withContext(Dispatchers.Default) {
         val result = sunflowerService.getAllPlants()
         result.filter { it.growZoneNumber == growZone.number }.shuffled()
     }

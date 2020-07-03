@@ -1,10 +1,7 @@
 package com.pj.playground.view
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.sunflower.ui.PlantAdapter
@@ -41,6 +38,10 @@ class PlantListFragment : Fragment() {
 
         setHasOptionsMenu(true)
         return binding.root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_plant_list, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -43,6 +43,7 @@ buildscript {
                 "androidx.core:core-ktx:$core_ktx_version",
                 "com.google.android.material:material:$material_version",
                 "androidx.fragment:fragment-ktx:$fragment_ktx_version",
+                'androidx.legacy:legacy-support-v4:1.0.0',
 
                 // Coroutines
                 "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version",
