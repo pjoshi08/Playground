@@ -1,14 +1,17 @@
 package com.pj.playground.data
 
+import androidx.annotation.AnyThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.map
+import androidx.lifecycle.switchMap
 import com.example.sunflower.GrowZone
 import com.example.sunflower.Plant
 import com.example.sunflower.util.CacheOnSuccess
 import com.pj.playground.utils.ComparablePair
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * Repository module for handling data operations.
@@ -47,6 +50,31 @@ class PlantRepository private constructor(
             service.customPlantSortOrder()
         }
 
+    /**
+     * Fetch a list of [Plant]s from the database that matches a given [GrowZone].
+     * Returns a LiveData-wrapped List of Plants.
+     *
+     * Change: Compared to the previous version, once the custom sort order is received
+     * from the network, it can then be used with the new main-safe applyMainSafeSort.
+     * This result is then emitted to the switchMap as the new value returned by getPlantsWithGrowZone.
+     * This is done to implement a suspending transform as each value is processed, learning
+     * how to build complex async transforms in LiveData
+     */
+    fun getPlantsWithGrowZone(growZone: GrowZone): LiveData<List<Plant>> =
+        dao.getPlantsWithGrowZoneNumber(growZone.number)
+            .switchMap { plantList ->
+                liveData {
+                    val customSortOrder = plantsListSortOrderCache.getOrAwait()
+                    emit(plantList.applyMainSafeSort(customSortOrder))
+                }
+            }
+
+    @AnyThread
+    suspend fun List<Plant>.applyMainSafeSort(customSortOrder: List<String>) =
+        withContext(defaultDispatcher) {
+            this@applyMainSafeSort.applySort(customSortOrder)
+        }
+
     private fun List<Plant>.applySort(customSortOrder: List<String>): List<Plant> {
         return sortedBy { plant ->
             val positionForItem = customSortOrder.indexOf(plant.plantId).let { order ->
@@ -55,19 +83,6 @@ class PlantRepository private constructor(
             ComparablePair(positionForItem, plant.name)
         }
     }
-
-    /**
-     * Fetch a list of [Plant]s from the database that matches a given [GrowZone].
-     * Returns a LiveData-wrapped List of Plants.
-     */
-    fun getPlantsWithGrowZone(growZone: GrowZone): LiveData<List<Plant>> =
-        liveData {
-            val plantsGrowZoneLiveData = dao.getPlantsWithGrowZoneNumber(growZone.number)
-            val customSortOrder = plantsListSortOrderCache.getOrAwait()
-            emitSource(plantsGrowZoneLiveData.map { plantList ->
-                plantList.applySort(customSortOrder)
-            })
-        }
 
     /**
      * Returns true if we should make a network request.
