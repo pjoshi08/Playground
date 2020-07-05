@@ -153,7 +153,8 @@ class PlantRepository private constructor(
      *
      * Change: Compared to the previous version, once the custom sort order is received
      * from the network, it can then be used with the new main-safe applyMainSafeSort.
-     * This result is then emitted to the switchMap as the new value returned by getPlantsWithGrowZone.
+     * This result is then emitted to the switchMap as the new value returned by
+     * getPlantsWithGrowZone.
      * This is done to implement a suspending transform as each value is processed, learning
      * how to build complex async transforms in LiveData
      */
@@ -166,8 +167,44 @@ class PlantRepository private constructor(
                 }
             }
 
+    /**
+     * By relying on regular suspend functions to handle the async work, this map operation
+     * is main-safe even though it combines two async operations.
+     *
+     * As each result from the database is returned, we'll get the cached sort order–and
+     * if it's not ready yet, it will wait on the async network request. Then once we have
+     * the sort order, it's safe to call applyMainSafeSort, which will run the sort on the
+     * default dispatcher.
+     *
+     * This code is now entirely main-safe by deferring the main safety concerns to regular
+     * suspend functions. It's quite a bit simpler than the same transformation implemented
+     * in [plantsFlow].
+     *
+     * It is an [error] to emit a value from a different coroutine than the one that called
+     * the suspending transformation.
+     * If you do launch another coroutine inside a flow operation like we're doing here inside
+     * [getOrAwait] and [applyMainSafeSort], make sure the value is returned to the original
+     * coroutine before emitting it.
+     *
+     * However, it is worth noting that it will execute a bit differently. The cached value
+     * will be fetched every single time the database emits a new value. This is OK because
+     * we're caching it correctly in [plantsListSortOrderCache], but if that started a new
+     * network request this implementation would make a lot of unnecessary network requests.
+     * In addition, in the [combine] version, the network request and the database query run
+     * [concurrently], while in this version they run in [sequence].
+     *
+     * Due to these differences, there is not a clear rule to structure this code.
+     * In many cases, it's fine to use suspending transformations like we're doing here,
+     * which makes all async operations sequential. However, in other cases, it's better
+     * to use operators to control concurrency and provide main-safety.
+     */
     fun getPlantsWithGrowZoneFlow(growZone: GrowZone): Flow<List<Plant>> {
         return dao.getPlantsWithGrowZoneNumberFlow(growZone.number)
+            .map { plantsList ->
+                val sortedOrderFromNetwork = plantsListSortOrderCache.getOrAwait()
+                val nextValue = plantsList.applyMainSafeSort(sortedOrderFromNetwork)
+                nextValue
+            }
     }
 
     @AnyThread
