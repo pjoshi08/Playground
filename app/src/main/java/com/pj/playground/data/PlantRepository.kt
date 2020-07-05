@@ -11,13 +11,15 @@ import com.example.sunflower.util.CacheOnSuccess
 import com.pj.playground.utils.ComparablePair
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 
 /**
  * Repository module for handling data operations.
  *
- * This PlantRepository exposes two UI-observable database queries [plants] and
- * [getPlantsWithGrowZone].
+ * This PlantRepository exposes two UI-observable database queries [plantsFlow] and
+ * [getPlantsWithGrowZoneFlow].
  *
  * To update the plants cache, call [tryUpdateRecentPlantsForGrowZoneCache] or
  * [tryUpdateRecentPlantsCache].
@@ -51,6 +53,72 @@ class PlantRepository private constructor(
         }
 
     /**
+     * The transform onStart will happen when an observer listens before other operators,
+     * and it can emit placeholder values. So here we're emitting an empty list, delaying
+     * calling getOrAwait by 1500ms, then continuing the original flow. If you run the app
+     * now, you'll see that the Room database query returns right away, combining with the
+     * empty list (which means it'll sort alphabetically). Then around 1500ms later, it
+     * applies the custom sort.
+     *
+     * You can use onStart to run suspending code before a flow runs. It can even emit extra
+     * values into the flow, so you could use it to emit a Loading state on a network request
+     * flow.
+     */
+    private val customSortFlowWithOnStart =
+        suspend { plantsListSortOrderCache.getOrAwait() }.asFlow()
+            .onStart {
+                emit(listOf())
+                delay(1500)
+            }
+
+    // Same as below
+    private val customSortFlow = flow { emit(plantsListSortOrderCache.getOrAwait()) }
+
+    /**
+     * Create a flow that calls a single function.
+     * This Flow calls getOrAwait and emits the result as its first and only value.
+     * It does this by referencing the getOrAwait method using :: and calling asFlow on the
+     * resulting Function object.
+     * Usage: Experimental for now
+     */
+    private val customSortFlowExperimental = plantsListSortOrderCache::getOrAwait.asFlow()
+
+    /**
+     * The [combine] operator combines two flows together. Both flows will run in their `own
+     * coroutine`, then whenever either flow produces a new value the transformation will be
+     * called with the latest value from either flow.
+     *
+     * By using [combine], we can combine the cached network lookup with our database query.
+     * Both of them will run on different coroutines [concurrently]. That means that while
+     * Room starts the network request, Retrofit can start the network query. Then, as
+     * soon as a result is available for both flows, it will call the combine lambda where
+     * we apply the loaded sort order to the loaded plants.
+     *
+     * The transformation [combine] will launch one coroutine for each flow being combined.
+     * This lets you combine two flows concurrently.
+     * It will combine the flows in a "fair" manner, which means that they'll all get a
+     * chance to produce a value (even if one of them is produced by a tight loop).
+     */
+    val plantsFlow: Flow<List<Plant>>
+        get() = dao.getPlantsFlow()
+            // When the result of customSortFlow is available,
+            // this will combine it with the latest value from
+            // the flow above.  Thus, as long as both `plants`
+            // and `sortOrder` have an initial value (their
+            // flow has emitted at least one value), any change
+            // to either `plants` or `sortOrder`  will call
+            // `plants.applySort(sortOrder)`.
+            .combine(customSortFlowExperimental) { plants, sortOrder ->
+                plants.applySort(sortOrder)
+            }
+
+    val plantsFlowWithDelay: Flow<List<Plant>>
+        get() = dao.getPlantsFlow()
+            .combine(customSortFlowWithOnStart) { plants, sortOrder ->
+                plants.applySort(sortOrder)
+            }
+
+    /**
      * Fetch a list of [Plant]s from the database that matches a given [GrowZone].
      * Returns a LiveData-wrapped List of Plants.
      *
@@ -68,6 +136,10 @@ class PlantRepository private constructor(
                     emit(plantList.applyMainSafeSort(customSortOrder))
                 }
             }
+
+    fun getPlantsWithGrowZoneFlow(growZone: GrowZone): Flow<List<Plant>> {
+        return dao.getPlantsWithGrowZoneNumberFlow(growZone.number)
+    }
 
     @AnyThread
     suspend fun List<Plant>.applyMainSafeSort(customSortOrder: List<String>) =

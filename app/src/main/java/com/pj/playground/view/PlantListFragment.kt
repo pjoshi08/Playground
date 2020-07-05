@@ -65,9 +65,13 @@ class PlantListFragment : Fragment() {
     }
 
     private fun subscribeUI(adapter: PlantAdapter) {
-        viewModel.plants.observe(viewLifecycleOwner) { plants ->
+        viewModel.plantsUsingFlow.observe(viewLifecycleOwner) { plants ->
             adapter.submitList(plants)
         }
+
+        /*viewModel.plantsUsingFlowDelay.observe(viewLifecycleOwner) { plants ->
+            adapter.submitList(plants)
+        }*/
 
         viewModel.snackBar.observe(viewLifecycleOwner) { text ->
             text?.let {

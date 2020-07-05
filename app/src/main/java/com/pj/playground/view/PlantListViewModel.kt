@@ -53,9 +53,16 @@ class PlantListViewModel internal constructor(
         }
     }
 
+    val plantsUsingFlow: LiveData<List<Plant>> = repository.plantsFlow.asLiveData()
+
+    val plantsUsingFlowDelay: LiveData<List<Plant>> = repository.plantsFlowWithDelay.asLiveData()
+
     init {
         // When creating a new ViewModel, clear the grow zone and perform any related udpates
         clearGrowZoneNumber()
+
+        // fetch the full plant list
+        launchDataLoad { repository.tryUpdateRecentPlantsCache() }
     }
 
     /**
@@ -79,9 +86,6 @@ class PlantListViewModel internal constructor(
      */
     fun clearGrowZoneNumber() {
         growZone.value = NoGrowZone
-
-        // initial code version, will move during flow rewrite
-        launchDataLoad { repository.tryUpdateRecentPlantsCache() }
     }
 
     /**
