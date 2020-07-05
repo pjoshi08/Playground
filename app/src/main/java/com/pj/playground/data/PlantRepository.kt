@@ -98,6 +98,23 @@ class PlantRepository private constructor(
      * This lets you combine two flows concurrently.
      * It will combine the flows in a "fair" manner, which means that they'll all get a
      * chance to produce a value (even if one of them is produced by a tight loop).
+     *
+     * By default, this flow uses the following [threads]:
+     * [plantService.customPlantSortOrder] runs on a Retrofit thread (it calls [Call.enqueue])
+     * [getPlantsFlow] will run queries on a Room [Executor]
+     * [applySort] will run on the collecting dispatcher (in this case [Dispatchers.Main])
+     *
+     * Calling [flowOn] has below important effects on how the code executes:
+     * 1. Launch a new coroutine on the defaultDispatcher (in this case, [Dispatchers.Default])
+     *    to run and collect the flow before the call to flowOn.
+     * 2. Introduces a [buffer] to send results from the new coroutine to later calls.
+     * 3. Emit the values from that buffer into the Flow after flowOn. In this case,
+     *    that's asLiveData in the ViewModel.
+     *
+     * This is very similar to how [withContext] works to switch dispatchers, but it does
+     * introduce a [buffer] in the middle of our transforms that changes how the flow works.
+     * The coroutine launched by [flowOn] is allowed to produce results faster than the caller
+     * consumes them, and it will buffer a large number of them by default.
      */
     val plantsFlow: Flow<List<Plant>>
         get() = dao.getPlantsFlow()
@@ -111,6 +128,18 @@ class PlantRepository private constructor(
             .combine(customSortFlowExperimental) { plants, sortOrder ->
                 plants.applySort(sortOrder)
             }
+            // So if all we were doing was calling suspend functions in Retrofit and and
+            // using Room flows, we wouldn't need to complicate this code with main-safety
+            // concerns.
+            // However, as our data set grows in size, the call to applySort may become slow
+            // enough to block the main thread. Flow offers a declarative API called flowOn
+            // to control which thread the flow runs on.
+            .flowOn(defaultDispatcher)
+            // In this case, we plan on sending the results to the UI, so we would only ever
+            // care about the most recent result. That's what the conflate operator does–it
+            // modifies the buffer of flowOn to store only the last result. If another result
+            // comes in before the previous one is read, it gets overwritten.
+            .conflate()
 
     val plantsFlowWithDelay: Flow<List<Plant>>
         get() = dao.getPlantsFlow()

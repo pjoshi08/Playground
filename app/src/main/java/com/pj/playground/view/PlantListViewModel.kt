@@ -6,6 +6,9 @@ import com.example.sunflower.NoGrowZone
 import com.example.sunflower.Plant
 import com.pj.playground.data.PlantRepository
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.ConflatedBroadcastChannel
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 
 /**
@@ -53,39 +56,92 @@ class PlantListViewModel internal constructor(
         }
     }
 
-    val plantsUsingFlow: LiveData<List<Plant>> = repository.plantsFlow.asLiveData()
+    /**
+     * This defines a new [ConflatedBroadcastChannel]. This is a special kind of coroutine-based
+     * value holder that holds only the last value it was given. It's a thread-safe concurrency
+     * primitive, so you can write to it from multiple threads at the same time (and whichever
+     * is considered "last" will win).
+     *
+     * You can also subscribe to get updates to the current value. Overall, it has the similar
+     * behavior to a [LiveData]–it just holds the last value and lets you observe changes to it.
+     * However, unlike [LiveData], you have to use [Coroutines] to read values on multiple threads.
+     *
+     * A [ConflatedBroadcastChannel] is often a good way to insert [events] into a flow. It provides
+     * a [concurrency] [primitive] (or low-level tool) for passing values between several coroutines.
+     *
+     * By conflating the events, we keep track of only the most recent event. This is often the
+     * correct thing to do, since UI events may come in faster than processing, and we usually
+     * don't care about intermediate values.
+     *
+     * If you do need to pass all events between coroutines and don't want conflation, consider
+     * using a [Channel] which offers the semantics of a [BlockingQueue] using suspend functions.
+     * The channelFlow builder can be used to make channel backed flows.
+     */
+    private val growZoneChannel = ConflatedBroadcastChannel<GrowZone>()
+
+    /**
+     * This pattern shows how to integrate events (grow zone changing) into a flow.
+     * It does exactly the same thing as the LiveData.switchMap version–switching
+     * between two data sources based on an event.
+     *
+     * One of the easiest ways to subscribe to changes in a [ConflatedBroadcastChannel]
+     * is to convert it to a [Flow]. This creates a flow that, when being collected,
+     * will subscribe to changes to the ConflatedBroadcastChannel and send them on the
+     * flow. It does [not] add any additional [buffers], so if the flow's collector is slower
+     * than writes to the growZoneChannel it'll skip over any results and only emit the
+     * most recent.
+     *
+     * This is also nice because cancellation of the channel subscription will happen on
+     * flow cancellation.
+     */
+    val plantsUsingFlow: LiveData<List<Plant>> = growZoneChannel.asFlow()
+        // This is exactly the same as `switchMap` from LiveData. Whenever the growZoneChannel
+        // changes its value, this lambda will be applied and it must return a Flow.
+        // Then, the returned Flow will be used as the Flow for all downstream operators.
+        // Basically, this lets us switch between different flows based on the value of growZone.
+        .flatMapLatest { growZone ->
+            if (growZone == NoGrowZone) {
+                repository.plantsFlow
+            } else {
+                repository.getPlantsWithGrowZoneFlow(growZone)
+            }
+        }.asLiveData()
 
     val plantsUsingFlowDelay: LiveData<List<Plant>> = repository.plantsFlowWithDelay.asLiveData()
 
     init {
         // When creating a new ViewModel, clear the grow zone and perform any related udpates
         clearGrowZoneNumber()
-
-        // fetch the full plant list
-        launchDataLoad { repository.tryUpdateRecentPlantsCache() }
     }
 
     /**
      * Filter the list to this grow zone.
      *
-     * In the starter code version, this will also start a network request. After refactoring,
-     * updating the grow zone will automatically kickoff a network request.
+     * To let the channel know about the filter change, we can call [offer]. This is a
+     * regular (non-suspending) function, and it's an easy way to communicate an event
+     * into a coroutine like we're doing here.
      */
     fun setGrowZoneNumber(num: Int) {
         growZone.value = GrowZone(num)
+        growZoneChannel.offer(GrowZone(num))
 
         // initial code version, will move during flow rewrite
-        launchDataLoad { repository.tryUpdateRecentPlantsCache() }
+        launchDataLoad { repository.tryUpdateRecentPlantsForGrowZoneCache(GrowZone(num)) }
     }
 
     /**
      * Clear the current filter of this plants list.
      *
-     * In the starter code version, this will also start a network request. After refactoring,
-     * updating the grow zone will automatically kickoff a network request.
+     * To let the channel know about the filter change, we can call [offer]. This is a
+     * regular (non-suspending) function, and it's an easy way to communicate an event
+     * into a coroutine like we're doing here.
      */
     fun clearGrowZoneNumber() {
         growZone.value = NoGrowZone
+        growZoneChannel.offer(NoGrowZone)
+
+        // fetch the full plant list
+        launchDataLoad { repository.tryUpdateRecentPlantsCache() }
     }
 
     /**
