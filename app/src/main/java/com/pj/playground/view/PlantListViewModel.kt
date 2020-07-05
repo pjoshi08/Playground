@@ -7,8 +7,7 @@ import com.example.sunflower.Plant
 import com.pj.playground.data.PlantRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 /**
@@ -112,6 +111,52 @@ class PlantListViewModel internal constructor(
     init {
         // When creating a new ViewModel, clear the grow zone and perform any related udpates
         clearGrowZoneNumber()
+
+        // This code will launch a new coroutine to observe the values sent to growZoneChannel.
+        // This code drives network requests from the growZoneChannel.
+        // This helps us create a single source of truth and avoid code duplication–there's
+        // no way any code can change the filter without refreshing the cache.
+        growZoneChannel.asFlow()
+            // `mapLatest` will apply this map function for each value.
+            // However, unlike regular `map`, it'll launch a new coroutine for each call
+            // to the map transform. Then, if a new value is emitted by the growZoneChannel
+            // before the previous coroutine completes, it'll cancel it before starting a new one.
+            // We can use mapLatest to control concurrency for us. Instead of building
+            // cancel/restart logic ourselves, the flow transform can take care of it.
+            // This code saves a lot of code and complexity compared to writing the same
+            // cancellation logic by hand.
+            // If you've used RxJava, you can use mapLatest exactly like you'd use `switchMap`.
+            // The key difference is that it provides a suspending lambda for you in a new
+            // coroutine, so you can call regular suspend functions directly from mapLatest.
+            .mapLatest { growZone ->
+                _spinner.value = true
+
+                if (growZone == NoGrowZone) {
+                    repository.tryUpdateRecentPlantsCache()
+                } else {
+                    repository.tryUpdateRecentPlantsForGrowZoneCache(growZone)
+                }
+            }
+            // onCompletion will be called every time the flow above it completes.
+            // It's the same thing as a `finally` block – it's a good place to put any code you
+            // need to execute during cleanup. Here we're resetting the spinner.
+            .onCompletion { _spinner.value = false }
+            // The catch operator will capture any exceptions thrown above it in the flow.
+            // It can emit a new value to the flow like an error state, rethrow the exception
+            // back into the flow, or perform work like we're doing here.
+            .catch { throwable -> _snackBar.value = throwable.message }
+            // The operator launchIn creates a new coroutine and collects every value
+            // from the flow. It'll launch in the CoroutineScope provided–in this case,
+            // the `viewModelScope`. This is great because it means when this ViewModel
+            // gets cleared, the Flow will be cancelled.
+            .launchIn(viewModelScope)
+
+        // Using Flow, it's natural to collect data in the ViewModel, Repository, or
+        // other data layers when needed.
+        // Since Flow is not tied to the UI, you don't need a UI observer to collect a flow.
+        // This is a big difference from LiveData which always requires a UI-observer to run.
+        // It is not a good idea to try to observe a LiveData in your ViewModel because it
+        // doesn't have an appropriate observation lifecycle.
     }
 
     /**
@@ -125,8 +170,7 @@ class PlantListViewModel internal constructor(
         growZone.value = GrowZone(num)
         growZoneChannel.offer(GrowZone(num))
 
-        // initial code version, will move during flow rewrite
-        launchDataLoad { repository.tryUpdateRecentPlantsForGrowZoneCache(GrowZone(num)) }
+        //launchDataLoad { repository.tryUpdateRecentPlantsForGrowZoneCache(GrowZone(num)) }
     }
 
     /**
@@ -140,8 +184,7 @@ class PlantListViewModel internal constructor(
         growZone.value = NoGrowZone
         growZoneChannel.offer(NoGrowZone)
 
-        // fetch the full plant list
-        launchDataLoad { repository.tryUpdateRecentPlantsCache() }
+        //launchDataLoad { repository.tryUpdateRecentPlantsCache() }
     }
 
     /**
