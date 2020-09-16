@@ -1,10 +1,8 @@
 package com.pj.playground.view
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Path
+import android.graphics.*
+import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import com.pj.playground.R
@@ -44,6 +42,14 @@ class ClippedView @JvmOverloads constructor(
     private val rowThree = rowTwo + rectInset + clipRectBottom
     private val rowFour = rowThree + rectInset + clipRectBottom
     private val textRow = rowFour + (1.5f * clipRectBottom)
+    private val rejectRow = rowFour + rectInset + 2 * clipRectBottom
+
+    private var rectF = RectF(
+        rectInset,
+        rectInset,
+        clipRectRight - rectInset,
+        clipRectBottom - rectInset
+    )
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -57,7 +63,7 @@ class ClippedView @JvmOverloads constructor(
         drawOutsideClippingExample(canvas)
         drawSkewedTextExample(canvas)
         drawTranslatedTextExample(canvas)
-        // drawQuickRejectExample(canvas)
+        drawQuickRejectExample(canvas)
     }
 
     private fun drawClippedRectangle(canvas: Canvas) {
@@ -99,36 +105,234 @@ class ClippedView @JvmOverloads constructor(
         )
     }
 
-    private fun drawTranslatedTextExample(canvas: Canvas) {
+    private fun drawDifferentClippingExample(canvas: Canvas) {
+        canvas.save()
 
-    }
+        // Move the origin to the right for the next rectangle.
+        canvas.translate(columnTwo, rowOne)
 
-    private fun drawSkewedTextExample(canvas: Canvas) {
+        // Use the subtraction of two clipping rectangles to create a frame.
+        canvas.clipRect(
+            2 * rectInset, 2 * rectInset,
+            clipRectRight - 2 * rectInset,
+            clipRectBottom - 2 * rectInset
+        )
 
-    }
+        // The method clipRect(float, float, float, float, Region.Op
+        // .DIFFERENCE) was deprecated in API level 26. The recommended
+        // alternative method is clipOutRect(float, float, float, float),
+        // which is currently available in API level 26 and higher.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            canvas.clipRect(
+                4 * rectInset, 4 * rectInset,
+                clipRectRight - 4 * rectInset,
+                clipRectBottom - 4 * rectInset,
+                Region.Op.DIFFERENCE
+            )
+        } else {
+            canvas.clipOutRect(
+                4 * rectInset, 4 * rectInset,
+                clipRectRight - 4 * rectInset,
+                clipRectBottom - 4 * rectInset
+            )
+        }
 
-    private fun drawOutsideClippingExample(canvas: Canvas) {
+        drawClippedRectangle(canvas)
 
-    }
-
-    private fun drawRoundedRectangleClippingExample(canvas: Canvas) {
-
-    }
-
-    private fun drawCombinedClippingExample(canvas: Canvas) {
-
-    }
-
-    private fun drawIntersectionClippingExample(canvas: Canvas) {
-
+        canvas.restore()
     }
 
     private fun drawCircularClippingExample(canvas: Canvas) {
+        canvas.save()
 
+        canvas.translate(columnOne, rowTwo)
+
+        // Clears any lines and curves from the path but unlike reset(),
+        // keeps the internal data structure for faster reuse.
+        path.rewind()
+        path.addCircle(
+            circleRadius, clipRectBottom - circleRadius,
+            circleRadius, Path.Direction.CCW
+        )
+
+        // The method clipPath(path, Region.Op.DIFFERENCE) was deprecated in
+        // API level 26. The recommended alternative method is
+        // clipOutPath(Path), which is currently available in
+        // API level 26 and higher.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            canvas.clipPath(path, Region.Op.DIFFERENCE)
+        } else {
+            canvas.clipOutPath(path)
+        }
+
+        drawClippedRectangle(canvas)
+
+        canvas.restore()
     }
 
-    private fun drawDifferentClippingExample(canvas: Canvas) {
+    private fun drawIntersectionClippingExample(canvas: Canvas) {
+        canvas.save()
 
+        canvas.translate(columnTwo, rowTwo)
+
+        canvas.clipRect(
+            clipRectLeft, clipRectTop,
+            clipRectRight - smallRectOffset,
+            clipRectBottom - smallRectOffset
+        )
+
+        // The method clipRect(float, float, float, float, Region.Op
+        // .INTERSECT) was deprecated in API level 26. The recommended
+        // alternative method is clipRect(float, float, float, float), which
+        // is currently available in API level 26 and higher.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            canvas.clipRect(
+                clipRectLeft + smallRectOffset,
+                clipRectTop + smallRectOffset,
+                clipRectRight, clipRectBottom,
+                Region.Op.INTERSECT
+            )
+        } else {
+            canvas.clipRect(
+                clipRectLeft + smallRectOffset,
+                clipRectTop + smallRectOffset,
+                clipRectRight, clipRectBottom
+            )
+        }
+
+        drawClippedRectangle(canvas)
+
+        canvas.restore()
+    }
+
+    private fun drawCombinedClippingExample(canvas: Canvas) {
+        canvas.save()
+
+        canvas.translate(columnOne, rowThree)
+
+        path.rewind()
+        path.addCircle(
+            clipRectLeft + rectInset + circleRadius,
+            clipRectTop + rectInset + circleRadius,
+            circleRadius, Path.Direction.CCW
+        )
+        path.addRect(
+            clipRectRight / 2 - circleRadius,
+            clipRectTop + rectInset + circleRadius,
+            clipRectRight / 2 + circleRadius,
+            clipRectBottom - rectInset, Path.Direction.CCW
+        )
+        canvas.clipPath(path)
+
+        drawClippedRectangle(canvas)
+
+        canvas.restore()
+    }
+
+    private fun drawRoundedRectangleClippingExample(canvas: Canvas) {
+        canvas.save()
+
+        canvas.translate(columnTwo, rowThree)
+
+        path.rewind()
+        path.addRoundRect(
+            rectF, clipRectRight / 4,
+            clipRectRight / 4, Path.Direction.CCW
+        )
+        canvas.clipPath(path)
+
+        drawClippedRectangle(canvas)
+
+        canvas.restore()
+    }
+
+    private fun drawOutsideClippingExample(canvas: Canvas) {
+        canvas.save()
+
+        canvas.translate(columnOne, rowFour)
+
+        canvas.clipRect(
+            2 * rectInset, 2 * rectInset,
+            clipRectRight - 2 * rectInset,
+            clipRectBottom - 2 * rectInset
+        )
+
+        drawClippedRectangle(canvas)
+
+        canvas.restore()
+    }
+
+    private fun drawTranslatedTextExample(canvas: Canvas) {
+        canvas.save()
+
+        paint.color = Color.GREEN
+        // Align the RIGHT side of the text with the origin.
+        paint.textAlign = Paint.Align.LEFT
+        // Apply transformation to canvas.
+        canvas.translate(columnTwo, textRow)
+
+        // Draw text.
+        canvas.drawText(
+            context.getString(R.string.translated),
+            clipRectLeft, clipRectTop, paint
+        )
+
+        canvas.restore()
+    }
+
+    private fun drawSkewedTextExample(canvas: Canvas) {
+        canvas.save()
+
+        paint.color = Color.YELLOW
+        paint.textAlign = Paint.Align.RIGHT
+
+        // Position text.
+        canvas.translate(columnTwo, textRow)
+        // Apply skew transformation.
+        canvas.skew(0.2f, 0.3f)
+        canvas.drawText(
+            context.getString(R.string.skewed),
+            clipRectLeft, clipRectTop, paint
+        )
+
+        canvas.restore()
+    }
+
+    private fun drawQuickRejectExample(canvas: Canvas) {
+        val inClipRectangle = RectF(
+            clipRectRight / 2,
+            clipRectBottom / 2,
+            clipRectRight * 2,
+            clipRectBottom * 2
+        )
+
+        val notInClipRectangle = RectF(
+            RectF(
+                clipRectRight + 1,
+                clipRectBottom + 1,
+                clipRectRight * 2,
+                clipRectBottom * 2
+            )
+        )
+
+        canvas.save()
+
+        canvas.translate(columnOne, rejectRow)
+
+        canvas.clipRect(
+            clipRectLeft, clipRectTop,
+            clipRectRight, clipRectBottom
+        )
+
+        // We can change to `notInClipRectangle` to see the other case
+        if (canvas.quickReject(inClipRectangle, Canvas.EdgeType.AA)) {
+            canvas.drawColor(Color.WHITE)
+        } else {
+            canvas.drawColor(Color.BLACK)
+            canvas.drawRect(inClipRectangle, paint)
+        }
+
+        canvas.restore()
     }
 
     private fun drawBackAndUnclippedRectangle(canvas: Canvas) {
