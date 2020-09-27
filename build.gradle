@@ -1,24 +1,25 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.3.72'
+    ext.kotlin_version = '1.4.10'
 
     ext {
         // global variables
-        compile_sdk = 29
-        min_sdk = 21
-        build_tools_version = "29.0.3"
+        compile_sdk = 30
+        min_sdk = 19
+        build_tools_version = "30.0.0"
         application_id = "com.pj.playground"
         version_code = 1
         version_name = "1.0"
 
         // local variables(use def)
-        def appcompat_version = '1.1.0'
-        def constraint_layout_version = '1.1.3'
-        def core_ktx_version = '1.3.0'
+        def appcompat_version = '1.2.0'
+        def constraint_layout_version = '2.0.0-rc1'
+        def core_ktx_version = '1.3.1'
         def junit_version = '4.13'
         def androidx_test_version = '1.1.1'
         def espresso_version = '3.2.0'
+        def material_version = '1.1.0-alpha05'
 
         libraries = [
                 // Kotlin standard library
@@ -27,7 +28,8 @@ buildscript {
                 // Android UI & AppCompat
                 "androidx.appcompat:appcompat:$appcompat_version",
                 "androidx.constraintlayout:constraintlayout:$constraint_layout_version",
-                "androidx.core:core-ktx:$core_ktx_version"
+                "androidx.core:core-ktx:$core_ktx_version",
+                "com.google.android.material:material:$material_version"
         ]
 
         testLibraries = [
@@ -46,7 +48,7 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.0'
+        classpath 'com.android.tools.build:gradle:4.0.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
