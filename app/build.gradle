@@ -15,6 +15,7 @@ android {
         versionName version_name
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary true
     }
 
     buildTypes {
@@ -30,6 +31,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+
+    buildFeatures {
+        dataBinding true
     }
 }
 
