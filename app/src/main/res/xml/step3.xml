@@ -12,7 +12,7 @@
             app:clickAction="toggle"
             app:targetId="@id/moon" />
 
-        <!-- TODO: Add KeyFrameSet and KeyPosition -->
+        <!-- COMPLETED: Add KeyFrameSet and KeyPosition -->
         <KeyFrameSet>
             <KeyPosition
                 app:framePosition="50"
