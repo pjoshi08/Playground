@@ -31,6 +31,8 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    dynamicFeatures = [':news_feature']
 }
 
 dependencies {
