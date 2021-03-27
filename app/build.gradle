@@ -36,6 +36,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation libraries
+    kapt kaptLibraries
     testImplementation testLibraries
     androidTestImplementation androidTestLibraries
 }

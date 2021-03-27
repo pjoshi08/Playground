@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.4.20'
+    ext.kotlin_version = '1.4.31'
 
     ext {
         // global variables
@@ -11,6 +11,7 @@ buildscript {
         application_id = "com.pj.playground"
         version_code = 1
         version_name = "1.0"
+        coroutines_version = '1.4.3'
 
         // local variables(use def)
         def appcompat_version = '1.2.0'
@@ -20,6 +21,7 @@ buildscript {
         def androidx_test_version = '1.1.1'
         def espresso_version = '3.2.0'
         def material_version = '1.1.0-alpha05'
+        def room_version = "2.2.6"
 
         libraries = [
                 // Kotlin standard library
@@ -29,7 +31,17 @@ buildscript {
                 "androidx.appcompat:appcompat:$appcompat_version",
                 "androidx.constraintlayout:constraintlayout:$constraint_layout_version",
                 "androidx.core:core-ktx:$core_ktx_version",
-                "com.google.android.material:material:$material_version"
+                "com.google.android.material:material:$material_version",
+                "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version",
+                "androidx.room:room-runtime:$room_version",
+                "androidx.room:room-ktx:$room_version",
+
+                // Java/Kotlin Library/Module
+                project(':core')
+        ]
+
+        kaptLibraries = [
+                "androidx.room:room-compiler:$room_version"
         ]
 
         testLibraries = [
@@ -39,6 +51,11 @@ buildscript {
         androidTestLibraries = [
                 "androidx.test.ext:junit:$androidx_test_version",
                 "androidx.test.espresso:espresso-core:$espresso_version"
+        ]
+
+        kotlinModuleLibs = [
+                "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version",
+                "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
         ]
     }
 
