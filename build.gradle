@@ -6,7 +6,7 @@ buildscript {
     ext {
         // global variables
         compile_sdk = 30
-        min_sdk = 19
+        min_sdk = 21
         build_tools_version = "30.0.0"
         application_id = "com.pj.playground"
         version_code = 1
