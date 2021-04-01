@@ -12,7 +12,7 @@ class DocumentRepository(
 
     suspend fun removeDocument(document: Document) = dataSource.remove(document)
 
-    suspend fun getOpenDocument() = openDocumentDataSource.getOpenDocument()
+    fun getOpenDocument() = openDocumentDataSource.getOpenDocument()
 
-    suspend fun setOpenDocument(document: Document) = openDocumentDataSource.setOpenDocument(document)
+    fun setOpenDocument(document: Document) = openDocumentDataSource.setOpenDocument(document)
 }

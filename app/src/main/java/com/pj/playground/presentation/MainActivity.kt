@@ -1,4 +1,4 @@
-package com.pj.playground.view
+package com.pj.playground.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
