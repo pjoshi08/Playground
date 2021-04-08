@@ -68,6 +68,7 @@ class ReaderViewModel(application: Application, interactors: Interactors) :
     fun loadArguments(arguments: Bundle?) {
         if (arguments == null) return
 
+        // 1
         currentPage.apply {
             addSource(renderer) { renderer ->
                 viewModelScope.launch {
