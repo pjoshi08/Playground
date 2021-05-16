@@ -1,0 +1,73 @@
+package com.pj.playground.view
+
+import android.content.Context
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import com.pj.playground.LogApplication
+import com.pj.playground.data.LoggerLocalDataSource
+import com.pj.playground.databinding.FragmentButtonsBinding
+import com.pj.playground.navigator.AppNavigator
+import com.pj.playground.navigator.Screens
+
+class ButtonsFragment : Fragment() {
+
+    private lateinit var logger: LoggerLocalDataSource
+    private lateinit var navigator: AppNavigator
+
+    private lateinit var binding: FragmentButtonsBinding
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        // Inflate the layout for this fragment
+        binding = FragmentButtonsBinding.inflate(inflater)
+        return binding.root
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        populateFields(context)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setOnClickListeners()
+    }
+
+    private fun populateFields(context: Context) {
+        with((context.applicationContext as LogApplication).serviceLocator) {
+            logger = loggerLocalDataSource
+            navigator = provideNavigator(requireActivity())
+        }
+    }
+
+    private fun setOnClickListeners() {
+        with(binding) {
+            button1.setOnClickListener {
+                logger.addLog("Interaction with 'Button 1'")
+            }
+
+            button2.setOnClickListener {
+                logger.addLog("Interaction with 'Button 2'")
+            }
+
+            button3.setOnClickListener {
+                logger.addLog("Interaction with 'Button 3'")
+            }
+
+            allLogs.setOnClickListener {
+                navigator.navigateTo(Screens.LOGS)
+            }
+
+            deleteLogs.setOnClickListener {
+                logger.removeLogs()
+            }
+        }
+    }
+}

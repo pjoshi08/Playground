@@ -7,29 +7,51 @@ buildscript {
         // global variables
         compile_sdk = 30
         min_sdk = 19
-        build_tools_version = "30.0.0"
+        build_tools_version = "30.0.3"
         application_id = "com.pj.playground"
         version_code = 1
         version_name = "1.0"
 
         // local variables(use def)
+        def hilt_version = '2.35'
         def appcompat_version = '1.2.0'
         def constraint_layout_version = '2.0.4'
         def core_ktx_version = '1.3.2'
-        def junit_version = '4.13'
-        def androidx_test_version = '1.1.1'
-        def espresso_version = '3.2.0'
         def material_version = '1.4.0-beta01'
+        def recyclerview_version = '1.2.0'
+        def room_version = '2.2.6'
+        def androidx_legacy_version = '1.0.0'
+
+        def junit_version = '4.13.2'
+        def test_core_ktx_version = '1.3.0'
+        def test_junit_ktx_version = '1.1.2'
+        def test_rules_version = '1.3.0'
+        def androidx_test_version = '1.1.1'
+        def espresso_version = '3.3.0'
 
         libraries = [
                 // Kotlin standard library
-                "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version",
+                "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
 
                 // Android UI & AppCompat
                 "androidx.appcompat:appcompat:$appcompat_version",
-                "androidx.constraintlayout:constraintlayout:$constraint_layout_version",
                 "androidx.core:core-ktx:$core_ktx_version",
-                "com.google.android.material:material:$material_version"
+                "androidx.constraintlayout:constraintlayout:$constraint_layout_version",
+                "androidx.recyclerview:recyclerview:$recyclerview_version",
+                //"androidx.legacy:legacy-support-v4:$androidx_legacy_version",
+                //"com.google.android.material:material:$material_version",
+
+                // Room
+                "androidx.room:room-runtime:$room_version",
+
+                // Hilt
+                "com.google.dagger:hilt-android:$hilt_version"
+        ]
+
+        kaptLibraries = [
+                "androidx.room:room-compiler:$room_version",
+
+                "com.google.dagger:hilt-android-compiler:$hilt_version"
         ]
 
         testLibraries = [
@@ -37,6 +59,10 @@ buildscript {
         ]
 
         androidTestLibraries = [
+                "junit:junit:$junit_version",
+                "androidx.test.:core-ktx:$test_core_ktx_version",
+                "androidx.test.ext:junit-ktx:$test_junit_ktx_version",
+                "androidx.test:rules:$test_rules_version",
                 "androidx.test.ext:junit:$androidx_test_version",
                 "androidx.test.espresso:espresso-core:$espresso_version"
         ]
@@ -44,12 +70,13 @@ buildscript {
 
     repositories {
         google()
-        jcenter()
-
+        mavenCentral()
+        //jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.1'
+        classpath 'com.android.tools.build:gradle:4.2.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.google.dagger:hilt-android-gradle-plugin:2.35"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -59,8 +86,9 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
-
+        mavenCentral()
+        //jcenter()
+        maven { url 'https://maven.google.com/'}  // Add
     }
 }
 
