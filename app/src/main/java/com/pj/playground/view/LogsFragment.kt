@@ -10,11 +10,14 @@ import com.pj.playground.LogApplication
 import com.pj.playground.data.LoggerLocalDataSource
 import com.pj.playground.databinding.FragmentLogsBinding
 import com.pj.playground.util.DateFormatter
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class LogsFragment : Fragment() {
 
-    private lateinit var logger: LoggerLocalDataSource
-    private lateinit var dateFormatter: DateFormatter
+    @Inject lateinit var logger: LoggerLocalDataSource
+    @Inject lateinit var dateFormatter: DateFormatter
 
     lateinit var binding: FragmentLogsBinding
 
@@ -25,19 +28,6 @@ class LogsFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentLogsBinding.inflate(inflater)
         return binding.root
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-        populateFields(context)
-    }
-
-    private fun populateFields(context: Context) {
-        with((context.applicationContext as LogApplication).serviceLocator) {
-            logger = loggerLocalDataSource
-            dateFormatter = provideDateFormatter()
-        }
     }
 
     override fun onResume() {
