@@ -4,11 +4,14 @@ import androidx.fragment.app.FragmentActivity
 import com.pj.playground.R
 import com.pj.playground.view.ButtonsFragment
 import com.pj.playground.view.LogsFragment
+import javax.inject.Inject
 
 /**
  * Navigator implementation.
  */
-class AppNavigatorImpl(private val activity: FragmentActivity) : AppNavigator {
+class AppNavigatorImpl @Inject constructor(
+    private val activity: FragmentActivity
+) : AppNavigator {
 
     override fun navigateTo(screens: Screens) {
         val fragment = when (screens) {

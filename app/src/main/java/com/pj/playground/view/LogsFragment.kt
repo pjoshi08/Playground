@@ -16,6 +16,11 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class LogsFragment : Fragment() {
 
+    /**
+     * Under the hood, [Hilt] will populate these fields in the onAttach() [lifecycle]
+     * method with instances built in the dependencies [container] that Hilt automatically
+     * generated for [LogsFragment].
+     */
     @Inject lateinit var logger: LoggerLocalDataSource
     @Inject lateinit var dateFormatter: DateFormatter
 

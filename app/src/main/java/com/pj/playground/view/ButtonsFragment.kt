@@ -11,11 +11,14 @@ import com.pj.playground.data.LoggerLocalDataSource
 import com.pj.playground.databinding.FragmentButtonsBinding
 import com.pj.playground.navigator.AppNavigator
 import com.pj.playground.navigator.Screens
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class ButtonsFragment : Fragment() {
 
-    private lateinit var logger: LoggerLocalDataSource
-    private lateinit var navigator: AppNavigator
+    @Inject lateinit var logger: LoggerLocalDataSource
+    @Inject lateinit var navigator: AppNavigator
 
     private lateinit var binding: FragmentButtonsBinding
 
@@ -28,23 +31,10 @@ class ButtonsFragment : Fragment() {
         return binding.root
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-        populateFields(context)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         setOnClickListeners()
-    }
-
-    private fun populateFields(context: Context) {
-        with((context.applicationContext as LogApplication).serviceLocator) {
-            logger = loggerLocalDataSource
-            navigator = provideNavigator(requireActivity())
-        }
     }
 
     private fun setOnClickListeners() {

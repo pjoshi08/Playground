@@ -17,11 +17,22 @@ import javax.inject.Singleton
  * cannot be constructor-injected such as [interfaces] or [classes] that are not contained in
  * your project. An example of this is [OkHttpClient] - you need to use its builder to create
  * an instance.
+ *
+ * In Kotlin, modules that only contain @Provides functions can be object classes. This way,
+ * [providers] get optimized and almost in-lined in generated code.
+ *
+ * @InstallIn tells Hilt the [containers] where the [bindings] are available by specifying a
+ * Hilt [component].
  */
 @InstallIn(SingletonComponent::class)
 @Module
 object DatabaseModule {
 
+    /**
+     * Each Hilt container comes with a set of default bindings that can be injected as
+     * dependencies into your custom bindings. This is the case with [applicationContext].
+     * To access it, you need to annotate the field with @ApplicationContext.
+     */
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext appContext: Context): AppDatabase =
