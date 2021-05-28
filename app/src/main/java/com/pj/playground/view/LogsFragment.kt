@@ -1,14 +1,13 @@
 package com.pj.playground.view
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.pj.playground.LogApplication
-import com.pj.playground.data.LoggerLocalDataSource
+import com.pj.playground.data.LoggerDataSource
 import com.pj.playground.databinding.FragmentLogsBinding
+import com.pj.playground.di.InMemoryLogger
 import com.pj.playground.util.DateFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -21,7 +20,9 @@ class LogsFragment : Fragment() {
      * method with instances built in the dependencies [container] that Hilt automatically
      * generated for [LogsFragment].
      */
-    @Inject lateinit var logger: LoggerLocalDataSource
+    @InMemoryLogger
+    @Inject lateinit var logger: LoggerDataSource
+
     @Inject lateinit var dateFormatter: DateFormatter
 
     lateinit var binding: FragmentLogsBinding

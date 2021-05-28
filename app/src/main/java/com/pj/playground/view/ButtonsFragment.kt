@@ -1,14 +1,13 @@
 package com.pj.playground.view
 
-import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.pj.playground.LogApplication
-import com.pj.playground.data.LoggerLocalDataSource
+import androidx.fragment.app.Fragment
+import com.pj.playground.data.LoggerDataSource
 import com.pj.playground.databinding.FragmentButtonsBinding
+import com.pj.playground.di.InMemoryLogger
 import com.pj.playground.navigator.AppNavigator
 import com.pj.playground.navigator.Screens
 import dagger.hilt.android.AndroidEntryPoint
@@ -17,7 +16,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ButtonsFragment : Fragment() {
 
-    @Inject lateinit var logger: LoggerLocalDataSource
+    @InMemoryLogger
+    @Inject lateinit var logger: LoggerDataSource
     @Inject lateinit var navigator: AppNavigator
 
     private lateinit var binding: FragmentButtonsBinding
