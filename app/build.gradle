@@ -15,7 +15,8 @@ android {
         versionCode version_code
         versionName version_name
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        //testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.pj.playground.CustomTestRunner"
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -50,4 +51,5 @@ dependencies {
     kapt kaptLibraries
     testImplementation testLibraries
     androidTestImplementation androidTestLibraries
+    kaptAndroidTest kaptAndroidTestLibs
 }

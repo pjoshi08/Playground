@@ -54,17 +54,24 @@ buildscript {
                 "com.google.dagger:hilt-android-compiler:$hilt_version"
         ]
 
+        kaptAndroidTestLibs = [
+                "com.google.dagger:hilt-android-compiler:$hilt_version"
+        ]
+
         testLibraries = [
                 "junit:junit:$junit_version"
         ]
 
         androidTestLibraries = [
                 "junit:junit:$junit_version",
-                "androidx.test.:core-ktx:$test_core_ktx_version",
+                "androidx.test:core-ktx:$test_core_ktx_version",
                 "androidx.test.ext:junit-ktx:$test_junit_ktx_version",
                 "androidx.test:rules:$test_rules_version",
                 "androidx.test.ext:junit:$androidx_test_version",
-                "androidx.test.espresso:espresso-core:$espresso_version"
+                "androidx.test.espresso:espresso-core:$espresso_version",
+
+                // Hilt Testing dependency
+                "com.google.dagger:hilt-android-testing:$hilt_version"
         ]
     }
 
@@ -87,7 +94,7 @@ allprojects {
         google()
         mavenCentral()
 
-        maven { url 'https://maven.google.com/'}
+        maven { url 'https://maven.google.com/' }
     }
 }
 
