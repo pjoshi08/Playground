@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.4.20'
+    ext.kotlin_version = '1.5.10'
 
     ext {
         // global variables
@@ -15,21 +15,54 @@ buildscript {
         // local variables(use def)
         def appcompat_version = '1.2.0'
         def constraint_layout_version = '2.0.0-rc1'
-        def core_ktx_version = '1.3.1'
+        def core_ktx_version = '1.5.0'
         def junit_version = '4.13'
-        def androidx_test_version = '1.1.1'
+        def androidx_test_version = '1.3.0'
         def espresso_version = '3.2.0'
-        def material_version = '1.1.0-alpha05'
+        def material_version = '1.4.0-rc01'
+        def card_version = '1.0.0'
+        def recyclerview_version = '1.2.1'
+        def androidx_annotations_version = '1.2.0'
+        def coroutines_version = '1.5.0'
+        def timber_version = '4.7.1'
+        def androidx_legacy_support_version = '1.0.0'
+        def room_version = '2.3.0'
+        def arch_lifecycle_version = '2.3.1'
+        def navigation_version = '2.3.5'
+        def fragment_ktx_version = '1.3.4'
 
         libraries = [
-                // Kotlin standard library
+                // Kotlin
                 "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version",
+                "androidx.fragment:fragment-ktx:$fragment_ktx_version",
 
                 // Android UI & AppCompat
                 "androidx.appcompat:appcompat:$appcompat_version",
                 "androidx.constraintlayout:constraintlayout:$constraint_layout_version",
                 "androidx.core:core-ktx:$core_ktx_version",
-                "com.google.android.material:material:$material_version"
+                "com.google.android.material:material:$material_version",
+
+                // App dependencies
+                "androidx.cardview:cardview:$card_version",
+                "androidx.recyclerview:recyclerview:$recyclerview_version",
+                "androidx.annotations:annotations:$androidx_annotations_version",
+                "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version",
+                "com.jakewharton.timber:timber:$timber_version",
+                "androidx.legacy:legacy-support-v4:$androidx_legacy_support_version",
+
+                // Architecture components
+                "androidx.room:room-runtime:$room_version",
+                "androidx.room:room-ktx:$room_version",
+                "androidx.lifecycle:lifecycle-extensions:$arch_lifecycle_version",
+                "androidx.lifecycle:lifecycle-viewmodel-ktx:$arch_lifecycle_version",
+                "androidx.lifecycle:lifecycle-livedata-ktx:$arch_lifecycle_version",
+                "androidx.navigation:navigation-fragment-ktx:$navigation_version",
+                "androidx.navigation:navigation-ui-ktx:$navigation_version"
+        ]
+
+        kaptLibraries = [
+                "androidx.room:room-compiler:$room_version",
+                "androidx.lifecycle:lifecycle-compiler:$arch_lifecycle_version"
         ]
 
         testLibraries = [
@@ -44,11 +77,11 @@ buildscript {
 
     repositories {
         google()
-        jcenter()
+        mavenCentral()
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.1'
+        classpath 'com.android.tools.build:gradle:4.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -59,7 +92,7 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
 
     }
 }
